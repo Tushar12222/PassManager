@@ -23,6 +23,13 @@ pub fn Home() -> Html {
         );
     }
 
+    let rerender = use_state(|| false);
+    let cloned_rerender = rerender.clone();
+    let on_delete = Callback::from(move|_| {
+        log!(*cloned_rerender);
+        cloned_rerender.set(!*cloned_rerender)
+    });
+
     let load_from_storage = {
         let state = state.clone();
         Callback::from(move |_| {
@@ -45,7 +52,9 @@ pub fn Home() -> Html {
         })
     };
 
-    use_effect_with((), move |_| {
+    
+
+    use_effect_with(*rerender, move |_| {
         load_from_storage.emit(());
         || {}
     });
@@ -62,7 +71,7 @@ pub fn Home() -> Html {
             <div>
                {
                 (&*state).into_iter().map(|details: &PasswordDetails| {
-                    html!{<Detail website={details.website.clone()} username={details.username.clone()} password={details.password.clone()}/>}
+                    html!{<Detail website={details.website.clone()} username={details.username.clone()} password={details.password.clone()} on_change={on_delete.clone()}/>}
                 }).collect::<Html>()
                }
             </div>

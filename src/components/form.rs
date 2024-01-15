@@ -9,11 +9,20 @@ use yew_router::prelude::*;
 use crate::router::Route;
 use crate::models::models::{PasswordDetails, Response};
 
-
+#[derive(Properties, Clone, PartialEq)]
+pub struct Props {
+    pub website: String,
+    pub username: String,
+    pub password: String,
+}
 
 #[function_component]
-pub fn Form() -> Html {
-    let state = use_state(|| PasswordDetails::default());
+pub fn Form(props: &Props) -> Html {
+    let state = use_state(|| PasswordDetails{
+        website: props.website.clone(),
+        username: props.username.clone(),
+        password: props.password.clone()
+    });
     let cloned_state = state.clone();
 
     //handles input for website name
@@ -64,6 +73,8 @@ pub fn Form() -> Html {
         );
     }
 
+    let navigator = use_navigator().unwrap();
+
     let save_to_storage = {
         let state = state.clone();
         Callback::from(move |_| {
@@ -79,6 +90,7 @@ pub fn Form() -> Html {
             }) as Box<dyn FnMut(_)>);
             unsafe {
                 send_message_to_background_script(message, data, &callback);
+                navigator.push(&Route::Home);
             }
             callback.forget();
         })

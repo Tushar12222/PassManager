@@ -6,7 +6,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.message == "Save") {
         // Saving data to chrome storage
-        chrome.storage.sync.set({ "key": request.data }, function () {
+        let object = {};
+        object[request.data.website] = request.data;
+        chrome.storage.sync.set(object, function () {
             if (chrome.runtime.lastError) {
                 console.log('Error: ' + chrome.runtime.lastError.message);
                 sendResponse({ success: false });
@@ -25,13 +27,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             console.log(listOfObjects);
             sendResponse({ success: true, message: listOfObjects });
         });
-    }
+    } else if (request.message == "Delete") {
+        chrome.storage.sync.remove([request.data], function() {
+            var error = chrome.runtime.lastError;
+            if (error) {
+                console.error(error);
+                sendResponse({ success: false});
+            } else {
+                console.log('Removed items for the key: ' + request.data);
+                sendResponse({ success: true});
+            }
+        });
+    };
 
     // Indicates that the response will be sent asynchronously
     return true;
 });
 
 
-// window.send_message_to_background_script = function(message, data, callback) {
-//     chrome.runtime.sendMessage({message: message, data: data}, callback);
-// };

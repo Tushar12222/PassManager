@@ -2,6 +2,12 @@
     "manifest_version": 3,
     "name": "PassManager",
     "version": "1.0",
+    "description": "A tool that lets you manage your passwords.",
+    "icons" : {
+      "16": "icons/password16px.png",
+      "48": "icons/password64px.png",
+      "128": "icons/password128px.png"
+    },
     "action": {
       "default_popup": "index.html"
     },
